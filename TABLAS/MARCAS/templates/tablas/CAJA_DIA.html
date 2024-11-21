@@ -1,0 +1,313 @@
+{% extends "base.html" %}
+
+{% block titulo %}CAJA DEL DÍA{% endblock %}
+{% load custom_filters %}
+{% block contenido %}
+<div class="nvs-caja-container">
+    <div class="back-button-CJASSDE">
+        <a href="javascript:history.back()">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16">
+                <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" fill="currentColor"/>
+            </svg>
+            Atrás
+        </a>
+    </div>
+    <div class="nvs-caja-header">
+        <h4 class="nvs-caja-title">MI CAJA - {{ today|date:"d/m/Y" }}</h4>
+        <div class="nvs-caja-buttons">
+            <a href="{% url 'ventas' %}" class="btn-orangecajas">LISTA DE VENTAS</a>
+            {% if is_superuser %}
+                <a href="{% url 'listar_cajas' %}" class="btn-grcajas">CAJAS</a>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if error %}
+        <div class="nvs-alert nvs-alert-danger">
+            {{ error }}
+        </div>
+    {% endif %}
+
+    {% if caja %}
+        <div class="nvs-grid-container">
+            <!-- Información General de la Caja -->
+            <div class="nvs-card nvs-info-card">
+                <h5 class="nvs-card-title">Información General</h5>
+                <table class="nvs-table">
+                    <tbody>
+                        <tr>
+                            <th>ID</th>
+                            <td>#{{ caja.id }}</td>
+                        </tr>
+                        <tr>
+                            <th>Nombre</th>
+                            <td>{{ caja.nombre }}</td>
+                        </tr>
+                        <tr>
+                            <th>Sucursal</th>
+                            <td>{{ caja.sucursal }}</td>
+                        </tr>
+                        <tr>
+                            <th>Estado</th>
+                            <td>
+                                {% if caja.abierta %}
+                                    <span class="nvs-badge nvs-badge-success">Abierta</span>
+                                {% else %}
+                                    <span class="nvs-badge nvs-badge-secondary">Cerrada</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Resumen Financiero -->
+            <div class="nvs-card nvs-financial-card">
+                <h5 class="nvs-card-title">Resumen Financiero</h5>
+                <div class="nvs-financial-summary">
+                    <div class="nvs-amount-box">
+                        <span class="nvs-amount-label">Monto Inicial</span>
+                        <span class="nvs-amount">${{ caja.monto_ini|default:"0.00"|floatformat:2 }}</span>
+                    </div>
+                    <div class="nvs-amount-box">
+                        <span class="nvs-amount-label">Total Ingresos</span>
+                        <span class="nvs-amount nvs-amount-success">${{ caja.total_ing|default:"0.00"|floatformat:2 }}</span>
+                    </div>
+                    <div class="nvs-amount-box">
+                        <span class="nvs-amount-label">Total Egresos</span>
+                        <span class="nvs-amount nvs-amount-danger">${{ caja.total_egr|default:"0.00"|floatformat:2 }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="nvs-payment-summary">
+                <div class="nvs-payment-box">
+                    <i class="nvs-icon nvs-icon-cash"></i>
+                    <span class="nvs-payment-label">Efectivo</span>
+                    <span class="nvs-amount">${{ ventas_resumen|dict_get:"Efectivo"|floatformat:2 }}</span>
+                </div>
+                <div class="nvs-payment-box">
+                    <i class="nvs-icon nvs-icon-card"></i>
+                    <span class="nvs-payment-label">Tarjeta débito</span>
+                    <span class="nvs-amount">${{ ventas_resumen|dict_get:"Tarjeta debito"|floatformat:2 }}</span>
+                </div>
+                <div class="nvs-payment-box">
+                    <i class="nvs-icon nvs-icon-transfer"></i>
+                    <span class="nvs-payment-label">Transferencia</span>
+                    <span class="nvs-amount">${{ ventas_resumen|dict_get:"Transferencia"|floatformat:2 }}</span>
+                </div>
+        </div>
+    {% else %}
+        <div class="nvs-alert nvs-alert-info">
+            No hay caja registrada para el día de hoy.
+        </div>
+    {% endif %}
+</div>
+
+<style>
+.nvs-caja-header {
+    background-color: #121212; /* Fondo negro */
+    color: #ffffff; 
+    padding: 20px 30px; 
+    border-radius: 12px; 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3); 
+    margin-bottom: 20px; 
+}
+
+.nvs-caja-title {
+    font-size: 2rem; 
+    font-weight: bold; 
+    margin: 0; 
+    letter-spacing: 1px; 
+    text-transform: uppercase; 
+}
+
+.nvs-caja-buttons {
+    display: flex; 
+    gap: 15px; 
+}
+
+.btn-orangecajas {
+    background-color: #fd7a39; 
+    color: #ffffff; 
+    padding: 12px 25px; 
+    border: none; 
+    border-radius: 50px; 
+    font-weight: bold; 
+    font-size: 1.1rem; 
+    transition: background-color 0.3s ease, transform 0.2s ease; 
+    position: relative; 
+    overflow: hidden; 
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.btn-orangecajas:hover {
+    background-color: #df714f; 
+    transform: translateY(-2px); 
+}
+
+.btn-grcajas {
+    background-color: #fd7a39;
+    color: #ffffff; 
+    padding: 12px 25px; 
+    border: none; 
+    border-radius: 50px;
+    font-weight: bold; 
+    font-size: 1.1rem; 
+    transition: background-color 0.3s ease, transform 0.2s ease; 
+    position: relative; 
+    overflow: hidden; 
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); 
+}
+
+.btn-grcajas:hover {
+    background-color: #df714f;
+    transform: translateY(-2px); 
+}
+
+
+.nvs-caja-container {
+    padding: 1.5rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+
+
+.nvs-grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+.nvs-card {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+}
+
+.nvs-card-title {
+    color: #2d3748;
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+.nvs-table {
+    width: 100%;
+}
+
+.nvs-table th {
+    text-align: left;
+    padding: 0.75rem;
+    color: #4a5568;
+    background: #f7fafc;
+    font-weight: 600;
+}
+
+.nvs-table td {
+    padding: 0.75rem;
+    color: #2d3748;
+}
+
+.nvs-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.nvs-badge-success {
+    background: #c6f6d5;
+    color: #22543d;
+}
+
+.nvs-badge-secondary {
+    background: #e2e8f0;
+    color: #4a5568;
+}
+
+
+
+.nvs-financial-summary, .nvs-payment-summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+}
+
+.nvs-amount-box, .nvs-payment-box {
+    padding: 1rem;
+    background: #f7fafc;
+    border-radius: 6px;
+    text-align: center;
+}
+
+.nvs-amount-label, .nvs-payment-label {
+    display: block;
+    color: #4a5568;
+    font-size: 0.875rem;
+    margin-bottom: 0.5rem;
+}
+
+.nvs-amount {
+    display: block;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #2d3748;
+}
+
+.nvs-amount-success {
+    color: #38a169;
+}
+
+.nvs-amount-danger {
+    color: #e53e3e;
+}
+
+/* Iconos simplificados */
+.nvs-icon {
+    display: block;
+    width: 2rem;
+    height: 2rem;
+    margin: 0 auto 0.5rem;
+    background: #cbd5e0;
+    mask-size: cover;
+    -webkit-mask-size: cover;
+}
+
+.nvs-icon-cash {
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.31-8.86c-1.77-.45-2.34-.94-2.34-1.67 0-.84.79-1.43 2.1-1.43 1.38 0 1.9.66 1.94 1.64h1.71c-.05-1.34-.87-2.57-2.49-2.97V5h-2v1.71c-1.51.35-2.72 1.35-2.72 2.9 0 1.86 1.55 2.84 3.72 3.36 1.84.43 2.2 1.07 2.2 1.73 0 .5-.37 1.29-2.1 1.29-1.63 0-2.27-.72-2.36-1.64H8.25c.1 1.7 1.36 2.66 2.86 2.97V19h2v-1.71c1.52-.35 2.72-1.35 2.72-2.9 0-2.21-1.91-2.96-3.52-3.25z'/%3E%3C/svg%3E");
+}
+
+.nvs-icon-card {
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z'/%3E%3C/svg%3E");
+}
+
+.nvs-icon-transfer {
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M4 15h16v-2H4v2zm0 4h16v-2H4v2zm0-8h16V9H4v2zm0-6v2h16V5H4z'/%3E%3C/svg%3E");
+}
+
+@media (max-width: 768px) {
+    .nvs-caja-header {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .nvs-caja-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    
+    .nvs-btn {
+        margin: 0;
+    }
+}
+</style>
+{% endblock %}

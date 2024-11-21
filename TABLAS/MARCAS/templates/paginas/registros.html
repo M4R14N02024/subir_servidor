@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block titulo %} REGISTROS {% endblock %}
+
+{% block contenido %}
+<div class="sidebar">
+    <div class="back-button-R">
+        <a href="{% url 'menu_p' %}">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16">
+                <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" fill="currentColor"/>
+            </svg>
+            Atrás
+        </a>
+    </div>
+    <a href="{% url 'ventas' %}" class="btn-registroV">VENTAS</a>
+    <a href="{% url 'cajas' %}" class="btn-registroC">CAJA</a>
+    <a href="{% url 'ver_sesiones' %}" class="btn-registroRC">REGISTRO DE ACTIVIDAD</a>
+    <a href="{% url 'bolsas' %}" class="btn-registroA">ALIMENTO SUELTO</a>
+    <a href="{% url 'graficos' %}" class="btn-registroG">GRÁFICOS</a>
+    <a href="{% url 'empleados' %}" class="btn-registroG">EMPLEADOS</a>
+    <a href="{% url 'lista_movimientos' %}" class="btn-registroG">PRODUCTOS DECONTADOS</a>
+</div>
+
+
+
+
+{% endblock %}

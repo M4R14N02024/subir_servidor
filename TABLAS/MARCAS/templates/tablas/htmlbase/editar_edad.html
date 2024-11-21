@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+
+{% block titulo %} EDITAR UNA EDAD {% endblock %}
+
+{% block contenido %} 
+
+<div class="card-edads">
+    <div class="card-headeredads">
+        EDITAR EDAD
+    </div>
+    <div class="card-boedads">
+        <h4 class="card-titleedads">Datos de Edad</h4>
+        {% include 'tablas/form.html' %}
+    </div>
+</div>
+
+{% endblock %}

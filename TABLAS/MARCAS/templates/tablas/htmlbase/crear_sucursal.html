@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+
+{% block titulo %} AGREGAR NUEVA SUCURSAL {% endblock %}
+
+{% block contenido %} 
+
+<div class="cardsucurls">
+    <div class="card-headersucurls">
+        CREAR SUCURSAL
+    </div>
+    <div class="card-bosucurls">
+        <h4 class="title-sucurls">Datos de la Sucursal</h4>
+        {% include 'tablas/form.html' %}
+    </div>
+</div>
+
+
+{% endblock %}

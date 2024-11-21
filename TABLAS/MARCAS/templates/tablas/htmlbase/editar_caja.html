@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+
+{% block titulo %} EDITAR CAJA {% endblock %}
+
+{% block contenido %}
+
+<div class="card">
+  <div class="card-header">
+    Editar caja
+  </div>
+  <div class="card-body">
+    <h4 class="card-title">Datos de la caja</h4>
+    {% include 'tablas/form.html' %}
+  </div>
+</div>
+
+{% endblock %}

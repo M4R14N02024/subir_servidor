@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block titulo %} MOVIMIENTOS DE STOCK {% endblock %}
+
+{% block contenido %}
+<div class="cardptss">
+    <div class="back-button-DSTOCK">
+        <a href="javascript:history.back()">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16">
+                <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" fill="currentColor"/>
+            </svg>
+            Atrás
+        </a>
+    </div>
+
+    <h4 class="titulo-mvtss">MOVIMIENTOS DE STOCK</h4>
+
+    <!-- Filtros horizontales -->
+    <div class="filter-containerr">
+      <!-- Buscador -->
+      <input type="text" 
+             id="search-input"
+             placeholder="Buscar por producto..."
+             value="{{ request.GET.search|default:'' }}">
+  
+      <!-- Filtros en línea -->
+      <div class="horizontal-filters">
+          <!-- Un solo campo de fecha -->
+          <input type="date" 
+                 id="fecha-filtro"
+                 value="{{ request.GET.fecha|default:'' }}"
+                 placeholder="Seleccionar fecha">
+  
+          <!-- Select motivo -->
+          <select id="motivo-select">
+              <option value="">Todos los motivos</option>
+              {% for codigo, nombre in form.MOTIVOS %}
+                  <option value="{{ codigo }}" {% if request.GET.motivo == codigo %}selected{% endif %}>
+                      {{ nombre }}
+                  </option>
+              {% endfor %}
+          </select>
+  
+          <!-- Botones -->
+          <button type="button" onclick="aplicarFiltros()" class="btn-filtrar">Filtrar</button>
+          <button type="button" onclick="limpiarFiltros()" class="btn-limpiar">Limpiar Filtros</button>
+      </div>
+  </div>
+
+    <!-- Tabla de resultados -->
+    <div class="card-bodyptss">
+        <div class="tabla-mvtsr">
+            <table class="table-mvtss">
+                <thead class="centered-headermvts">
+                    <tr>
+                        <th>FECHA</th>
+                        <th>PRODUCTO</th>
+                        <th>CANTIDAD</th>
+                        <th>MOTIVO</th>
+                        <th>OBSERVACIÓN</th>
+                        <th>USUARIO</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for movimiento in movimientos %}
+                    <tr>
+                        <td>{{ movimiento.fecha|date:"d/m/Y H:i" }}</td>
+                        <td>
+                            {% if movimiento.producto.categoria.nombre == "Indumentaria" or movimiento.producto.categoria.nombre == "Accesorios" or movimiento.producto.categoria.nombre == "Medicamentos" %}
+                                {{movimiento.producto.categoria}} para {{ movimiento.producto.animal}} {{ movimiento.producto.edad}} {{ movimiento.producto.marca}}
+                            {% else %}
+                                {{movimiento.producto.categoria}} para {{ movimiento.producto.animal}} {{movimiento.producto.nombre}} {{ movimiento.producto.edad}} {{ movimiento.producto.marca}}
+                                {% if movimiento.producto.peso %}
+                                    x {{movimiento.producto.peso}} Kg
+                                {% endif %}
+                            {% endif %}
+                        </td>
+                        <td>{{ movimiento.cantidad }}</td>
+                        <td>{{ movimiento.get_motivo_display }}</td>
+                        <td>{{ movimiento.observacion|default:"-" }}</td>
+                        <td>{{ movimiento.usuario.username }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

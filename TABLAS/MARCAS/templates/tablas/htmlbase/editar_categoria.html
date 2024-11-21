@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+
+{% block titulo %} EDITAR UNA CATEGORIA {% endblock %}
+
+{% block contenido %} 
+
+<div class="card-catgs">
+    <div class="card-headercatgs">
+        EDITAR CATEGORIA
+    </div>
+    <div class="card-bocatgs">
+        <h4 class="card-titlecatgs">Datos de la Categoria</h4>
+        {% include 'tablas/form.html' %}
+    </div>
+</div>
+
+{% endblock %}

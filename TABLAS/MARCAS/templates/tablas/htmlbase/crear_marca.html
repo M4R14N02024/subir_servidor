@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+
+{% block titulo %} AGREGAR NUEVA MARCA {% endblock %}
+
+{% block contenido %} 
+
+<div class="card-mr">
+    <div class="card-header-mr">
+        CREAR MARCA
+    </div>
+    <div class="card-bomars">
+        <h4 class="card-titlemars">Datos de la Marca</h4>
+        {% include 'tablas/form.html' %}
+    </div>
+</div>
+
+
+{% endblock %}

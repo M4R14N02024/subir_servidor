@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+
+{% block titulo %} AGREGAR NUEVO ANIMAL {% endblock %}
+
+{% block contenido %} 
+
+<div class="card-animlss">
+    <div class="card-headeranimlss">
+        EDITAR ANIMAL
+    </div>
+    <div class="card-boanimlss">
+        <h4 class="card-titleanimlss">Datos del Animal</h4>
+        {% include 'tablas/form.html' %}
+    </div>
+</div>
+
+
+{% endblock %}

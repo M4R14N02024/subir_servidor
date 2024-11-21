@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block contenido %}
+<div class="contenedor-central-CambiarrRoles">
+    <div class="tarjeta-CambiarrRoles">
+        <div class="tarjeta-interior-CambiarrRoles">
+            <h2 class="titulo-CambiarrRoles">Cambiar Rol :</h2>
+            <h2 class="titulo-CambiarrRolesx">{{ empleado.nombre }} {{ empleado.apellido }}</h2>
+            
+            {% if messages %}
+            <div class="mensajes-CambiarrRoles">
+                {% for message in messages %}
+                <div class="alerta alerta-{{ message.tags }}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            
+            <form method="POST" class="formulario-creacion-CambiarrRoles">
+                {% csrf_token %}
+                <div class="campo-CambiarrRoles">
+                    <label for="nuevo_rol">Seleccionar Nuevo Rol:</label>
+                    <select id="nuevo_rol" name="nuevo_rol" required class="select-tipo-empleado">
+                        <option value="regular" {% if rol_actual == 'regular' %}selected{% endif %}>
+                            Empleado Regular
+                        </option>
+                        <option value="especial" {% if rol_actual == 'especial' %}selected{% endif %}>
+                            Empleado Especial
+                        </option>
+                    </select>
+                </div>
+                
+                <div class="botones-CambiarrRoles">
+                    <button type="submit" class="boton-CambiarRol">Cambiar Rol</button>
+                    <button href="{% url 'empleados' %}" class="boton-cancelarRol">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* .select-tipo-empleado {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        background-color: white;
+        font-size: 1rem;
+    }
+    
+    .select-tipo-empleado:focus {
+        outline: none;
+        border-color: #4a90e2;
+        box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
+    } */
+
+</style>
+{% endblock %}

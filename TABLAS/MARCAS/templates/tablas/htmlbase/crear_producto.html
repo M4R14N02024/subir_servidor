@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block titulo %} AGREGAR NUEVO PRODUCTO {% endblock %}
+
+{% block contenido %}
+<div class="cardCpt">
+  <div class="card-headerCpt">
+    <h1>CREAR UN PRODUCTO</h1>
+  </div>
+  <div class="back-button-CPS">
+    <a href="javascript:history.back()">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16">
+            <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" fill="currentColor"/>
+        </svg>
+        Atras
+    </a>
+  </div>
+  <!-- {% if messages %}
+  <div class="product-alert-container">
+      {% for message in messages %}
+      <div class="product-alert-message {% if message.tags == 'error' %}product-alert-message--error{% else %}product-alert-message--{{ message.tags }}{% endif %}">
+          <div class="product-alert-content">
+              {{ message }}
+          </div>
+          <button type="button" class="product-alert-close" onclick="this.parentElement.style.display='none'">×</button>
+      </div>
+      {% endfor %}
+  </div>
+{% endif %} -->
+  <div class="card-bodyCpt">
+    <h4 class="card-titleCpt">Datos del producto</h4>
+    <form enctype="multipart/form-data" method="post" class="styled-formCpt">
+      {% csrf_token %}
+      {% for campo in formulario %}
+      <div class="form-group-Cpt">
+          <label for="{{ campo.id_for_label }}" class="form-labelCpt">{{ campo.label }}</label>
+          {% if campo.field.widget.input_type == "select" %}
+              <select name="{{ campo.name }}" id="{{ campo.id_for_label }}" class="form-controlCpt" {% if campo.field.required %}required{% endif %}>
+                  <option value="" {% if not campo.value %}selected{% endif %} disabled>Selecciona una opción</option>
+                  {% for opcion in campo.field.choices %}
+                      <option value="{{ opcion.0 }}" {% if campo.value == opcion.0 %}selected{% endif %}>{{ opcion.1 }}</option>
+                  {% endfor %}
+              </select>
+          {% elif campo.field.widget.input_type == "text" %}
+              <input type="text" class="form-controlCptp" name="{{ campo.name }}" id="{{ campo.id_for_label }}"
+                  aria-describedby="helpId" placeholder="{{ campo.label }}" value="{{ campo.value|default:'' }}"/>
+          {% elif campo.field.widget.input_type == "number" %}
+              <input type="number" class="form-controlCptv" name="{{ campo.name }}" id="{{ campo.id_for_label }}"
+                  aria-describedby="helpId" placeholder="{{ campo.label }}" value="{{ campo.value|default:'' }}" step="any" />
+          {% elif campo.field.widget.input_type == "textarea" %}
+              <textarea class="form-controlCptn" name="{{ campo.name }}" id="{{ campo.id_for_label }}"
+                  aria-describedby="helpId" placeholder="{{ campo.label }}">{{ campo.value|default:'' }} </textarea>
+          {% else %}
+              {{ campo }}
+          {% endif %}
+          <div class="col-12 help-text">{{ campo.errors }}</div>
+      </div>
+      {% endfor %}
+      <div class="btn-submit-container">
+        <button type="submit" class="c-buttongdar">
+    
+                
+                Guardar
+            
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

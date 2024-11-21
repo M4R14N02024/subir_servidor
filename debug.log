@@ -1,0 +1,45 @@
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+Forbidden (Permission denied): /sucursales
+Traceback (most recent call last):
+  File "C:\Users\morea\AppData\Local\Programs\Python\Python312\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\morea\AppData\Local\Programs\Python\Python312\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\morea\Desktop\Forrajeria-22-10-corriendo errores\TABLAS\MARCAS\decorators.py", line 31, in _wrapped_view
+    raise PermissionDenied
+django.core.exceptions.PermissionDenied
+Forbidden (Permission denied): /registros/
+Traceback (most recent call last):
+  File "C:\Users\morea\AppData\Local\Programs\Python\Python312\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\morea\AppData\Local\Programs\Python\Python312\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\morea\AppData\Local\Programs\Python\Python312\Lib\site-packages\django\contrib\auth\decorators.py", line 57, in _view_wrapper
+    test_pass = test_func(request.user)
+                ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\morea\AppData\Local\Programs\Python\Python312\Lib\site-packages\django\contrib\auth\decorators.py", line 130, in check_perms
+    raise PermissionDenied
+django.core.exceptions.PermissionDenied
+C:\Users\morea\Desktop\Forrajeria-22-10-corriendo errores\TABLAS\MARCAS\views.py changed, reloading.
+C:\Users\morea\Desktop\Forrajeria-22-10-corriendo errores\TABLAS\MARCAS\views.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+C:\Users\morea\Desktop\Forrajeria-22-10-corriendo errores\sistema\settings.py changed, reloading.
+C:\Users\morea\Desktop\Forrajeria-22-10-corriendo errores\sistema\settings.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+C:\Users\morea\Desktop\Forrajeria-22-10-corriendo errores\TABLAS\MARCAS\middleware.py changed, reloading.
+C:\Users\morea\Desktop\Forrajeria-22-10-corriendo errores\TABLAS\MARCAS\middleware.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+C:\Users\morea\Desktop\Forrajeria-22-10-corriendo errores\TABLAS\MARCAS\middleware.py changed, reloading.
+C:\Users\morea\Desktop\Forrajeria-22-10-corriendo errores\TABLAS\MARCAS\middleware.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+C:\Users\morea\Desktop\Forrajeria-22-10-corriendo errores\sistema\settings.py changed, reloading.
+C:\Users\morea\Desktop\Forrajeria-22-10-corriendo errores\sistema\settings.py changed, reloading.

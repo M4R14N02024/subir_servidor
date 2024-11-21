@@ -1,0 +1,359 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block titulo %}Nueva Venta{% endblock %}
+
+{% block contenido %}
+<div class="contenitore-prodotto">
+    <div class="main-column">
+        <div class="header">
+            <div class="action-buttons">
+                <a href="{% url 'ventas' %}" class="bottone-aggiungi" role="button" target="_blank">LISTA DE VENTAS</a>
+                <a href="{% url 'productos' %}" class="bottone-aggiungi" role="button" target="_blank">STOCK</a>
+                <a href="{% url 'cajas' %}" class="bottone-aggiungi" role="button" target="_blank">CAJA</a>
+
+
+                {% if caja_abierta %}
+                    <form id="formCerrarCaja">
+                        {% csrf_token %}
+                        <button type="button" class="btn-Cjjs" onclick="mostrarModalCierreCaja()">
+                            CERRAR CAJA
+                        </button>
+                    </form>
+                {% else %}
+                    <p>No hay una caja abierta. Por favor, abra una caja antes de realizar ventas.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="category-buttons">
+            <div class="animal-buttons">
+                <button class="btn-category" onclick="mostrarCategorias('Perro')">PERRO</button>
+                <button class="btn-category" onclick="mostrarCategorias('Gato')">GATO</button>
+                <button class="btn-category" onclick="mostrarCategorias('Vaca')">VACA</button>
+                <button class="btn-category" onclick="mostrarCategorias('Caballo')">CABALLO</button>
+                <button class="btn-category" onclick="mostrarCategorias('Conejo')">CONEJO</button>
+                <button class="btn-category" onclick="mostrarCategorias('Ave')">AVE</button>
+            </div>
+            <div id="categorias-productos" class="category-group" style="display: none;">
+                <button class="btn-category" onclick="mostrarProductos(animalSeleccionado, 'ALIMENTO')">ALIMENTO</button>
+                <button class="btn-category" onclick="mostrarProductos(animalSeleccionado, 'INDUMENTARIA')">INDUMENTARIA</button>
+                <button class="btn-category" onclick="mostrarProductos(animalSeleccionado, 'MEDICAMENTO')">MEDICAMENTO</button>
+                <button class="btn-category" onclick="mostrarOpcionesSuelto()">SUELTO</button>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="sales-list">
+                <table class="tabella-prodotto">
+                    <thead>
+                        <tr>
+                            <th>NOMBRE</th>
+                            <th>CANTIDAD</th>
+                            <th>PRECIO</th>
+                            <th>TOTAL</th>
+                            <th>CANCELAR</th>
+                        </tr>
+                    </thead>
+                    <tbody id="productos-venta">
+                        <!-- Los productos se agregarán aquí dinámicamente -->
+                    </tbody>
+                </table>
+                <div class="totales">
+                    <p>Subtotal: $<span id="subtotal-amount">0.00</span></p>
+                    <p>
+                        Descuento total: 
+                        <select id="descuento-total" onchange="actualizarTotal()">
+                            <option value="0">0%</option>
+                            <option value="5">5%</option>
+                            <option value="10">10%</option>
+                            <option value="15">15%</option>
+                            <option value="20">20%</option>
+                            <option value="25">25%</option>
+                            <option value="30">30%</option>
+                        </select>
+                    </p>
+                    <p>Descuento aplicado: $<span id="descuento-amount">0.00</span></p>
+                    <div class="metodo-pago">
+                        <label for="metodo-pago">Método de Pago:</label>
+                        <select id="metodo-pago" name="metodo_pago" required>
+                            <option value="">seleccione</option>
+                            <option value="Efectivo">Efectivo</option>
+                            <option value="Tarjeta debito">Tarjeta de Débito</option>
+                            <option value="Transferencia">Transferencia</option>
+                        </select>
+                    </div>
+                    <h3>TOTAL FINAL: $<span id="total-amount">0.00</span></h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="action-buttons">
+            <button type="button" onclick="cancelarVenta()">X</button>
+            <button type="button" onclick="imprimirVenta()">🖨️</button>
+            <button type="button" onclick="guardarVenta(false)">💾</button>
+            <button type="button" onclick="guardarVenta(true)">✅</button>
+        </div>
+
+        <form id="venta-form" method="post" action="{% url 'nueva_venta' %}">
+            {% csrf_token %}
+            <input type="hidden" name="cliente" value="1">
+            <input type="hidden" name="caja" value="1">
+            <div id="productos-seleccionados">
+                <!-- Los productos seleccionados se agregarán aquí dinámicamente -->
+            </div>
+        </form>
+    </div>
+
+    <div class="sidebar-column">
+        <div class="search-bar">
+            <input type="text" id="buscar-producto" placeholder="Buscar producto...">
+            <div id="sugerencias-productos" class="sugerencias"></div>
+        </div>
+    
+        <div id="productos-mostrar">
+            <h3>Productos disponibles:</h3>
+            <ul id="lista-productos"></ul>
+            <div id="paginacion">
+                <button id="prev-page"> Anterior</button>
+                <span id="page-info">Página <span id="current-page">1</span> de <span id="total-pages">1</span></span>
+                <button id="next-page">Siguiente ></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="modalSuelto" class="modalsA">
+    <div class="modals-contentsA">
+        <span id="closeSueltoModal" class="closessA">&times;</span>
+        <h2>Opciones de Suelto</h2>
+        <button onclick="abrirNuevaBolsa()">Abrir nueva bolsa</button>
+        <button onclick="mostrarBolsasAbiertas()">Bolsas abiertas</button>
+        <div id="listaBolsasAbiertas"></div>
+    </div>
+</div>
+
+<div id="ventaModal" class="modalvM">
+    <div class="modal-contentvM">
+        <h2 class="modal-titlevM">Ingrese el monto a vender:</h2>
+        <p id="ultimo-10-aviso" style="display: none; color: red;">Esta bolsa está en el último 10%.</p>
+        <input type="text" id="montoVenta" class="modal-inpuvMt" maxlength="5" pattern="\d*" inputmode="numeric">
+        <div class="modal-buttonsvM">
+            <button id="cancelarVenta" class="button-cancelvM">Cancelar</button>
+            <button id="aceptarVenta" class="button-acceptvM">Aceptar</button>
+        </div>
+    </div>
+</div>
+
+<div id="cerrarBolsaModal" class="modal-bolsa">
+    <div class="modal-bolsa-content">
+        <h2 class="modal-bolsa-title">Confirmación</h2>
+        <p>Esta bolsa está en el último 10%. ¿Desea cerrarla ahora?</p>
+        <div class="modal-bolsa-buttons">
+            <button id="cancelarCierreBolsa" class="button-bolsa-cancel">Cancelar</button>
+            <button id="aceptarCierreBolsa" class="button-bolsa-accept">Aceptar</button>
+        </div>
+    </div>
+</div>
+<div id="modalCierreCaja" class="modalCjas">
+    <div class="modal-contentCjas">
+        <h2 class="modal-titleCjas">Confirmación de Cierre de Caja</h2>
+        
+        <!-- Primera vista del modal -->
+        <div id="confirmacion-inicialCjas">
+            <p>¿Está seguro que desea cerrar la caja?</p>
+            <div class="modal-buttonsCjas">
+                <button class="button-cancelCjas" onclick="cerrarModalCierreCaja()">Cancelar</button>
+                <button class="button-acceptCjas" onclick="confirmarCierreCaja()">Aceptar</button>
+            </div>
+        </div>
+
+        <!-- Segunda vista del modal (informe) -->
+        <div id="informe-cierre" style="display: none;">
+            <h3 class="resuv">Resumen de Ventas</h3>
+            <div class="informe-Cjas">
+                <div class="informe-Cjas">
+                    <span>Efectivo:</span>
+                    <span id="total-efectivo">$0.00</span>
+                </div>
+                <div class="informe-Cjasd">
+                    <span>Tarjeta de Débito:</span>
+                    <span id="total-tarjeta">$0.00</span>
+                </div>
+                <div class="informe-Cjast">
+                    <span>Transferencia:</span>
+                    <span id="total-transferencia">$0.00</span>
+                </div>
+                <div class="informe-total">
+                    <span>Total:</span>
+                    <span id="total-general">$0.00</span>
+                </div>
+            </div>
+            <div class="modal-buttonsCjasi">
+                <button class="button-acceptCjas" onclick="finalizarCierre()">Finalizar</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Reemplaza tu modal actual con este -->
+<div id="modal-confirmacion-venta" class="modal-confirmacion-v">
+    <div class="modal-contenido-v">
+        <div class="modal-header-v">
+            <h2>Confirmación</h2>
+            <span class="cerrar-modal-v">&times;</span>
+        </div>
+        <div class="modal-body-v">
+            <i class="fas fa-check-circle"></i>
+            <p id="mensaje-confirmacion-venta"></p>
+        </div>
+        <div class="modal-footer-v">
+            <button class="boton-aceptar-v">Aceptar</button>
+        </div>
+    </div>
+</div>
+
+<script src="https://unpkg.com/lucide@latest"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        lucide.createIcons();
+    });
+    // Prevenir el botón de "Regresar" del navegador
+    window.history.pushState(null, "", window.location.href);
+
+    // Bloquear la navegación hacia atrás
+    window.onpopstate = function(event) {
+        // Forzar que el usuario permanezca en la misma página
+        window.history.pushState(null, "", window.location.href);
+
+        // Mensaje opcional al intentar usar el botón "Regresar"
+        alert("No se puede salir, primero cierre sesión.");
+    };
+
+
+    window.addEventListener('click', function() {
+        userInteracted = true;
+    });
+    
+    window.addEventListener('keydown', function() {
+        userInteracted = true;
+    });
+
+    // Advertir al intentar cerrar la ventana o pestaña, pero solo si ha habido interacción
+    window.onbeforeunload = function(event) {
+    if (accionIntencional) {
+        return undefined;
+    }
+    
+    if (userInteracted) {
+        const message = "Estás a punto de salir de la página. ¿Estás seguro?";
+        event.returnValue = message;
+        return message;
+    }
+};
+let modalAbierto = false;
+
+function mostrarModalCierreCaja() {
+    document.getElementById('modalCierreCaja').style.display = 'block';
+    document.getElementById('confirmacion-inicialCjas').style.display = 'block';
+    document.getElementById('informe-cierre').style.display = 'none';
+    modalAbierto = true;
+}
+
+function cerrarModalCierreCaja() {
+    document.getElementById('modalCierreCaja').style.display = 'none';
+    modalAbierto = false;
+}
+
+function confirmarCierreCaja() {
+    console.log('Iniciando cierre de caja...');
+    fetch('{% url "cerrar_caja" %}', {  // Cambiar la URL
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        },
+        body: new URLSearchParams({
+            'cerrar_caja': 'true'
+        })
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('Datos recibidos:', data);
+        if (data.success) {
+            document.getElementById('confirmacion-inicialCjas').style.display = 'none';
+            const informeCierre = document.getElementById('informe-cierre');
+            informeCierre.style.display = 'block';
+            
+            document.getElementById('total-efectivo').textContent = 
+                `$${data.resumen.efectivo.toFixed(2)}`;
+            document.getElementById('total-tarjeta').textContent = 
+                `$${data.resumen.tarjeta_debito.toFixed(2)}`;
+            document.getElementById('total-transferencia').textContent = 
+                `$${data.resumen.transferencia.toFixed(2)}`;
+            document.getElementById('total-general').textContent = 
+                `$${data.resumen.total.toFixed(2)}`;
+        } else {
+            console.error('Error en datos:', data.error);
+            alert(data.error || 'Error al cerrar la caja');
+            cerrarModalCierreCaja();
+        }
+    })
+    .catch(error => {
+        console.error('Error en la petición:', error);
+        alert('Error al procesar la solicitud');
+        cerrarModalCierreCaja();
+    });
+}
+
+function finalizarCierre() {
+    window.location.href = '{% url "inicio" %}';
+}
+
+window.onclick = function(event) {
+    if (event.target == document.getElementById('modalCierreCaja') && modalAbierto) {
+        cerrarModalCierreCaja();
+    }
+};
+
+
+    // Prevenir que el usuario regrese usando el historial del navegador al cargar la página
+    window.onload = function() {
+        window.history.pushState(null, "", window.location.href);
+
+        // Asegurar que el historial esté actualizado al cargar
+        setTimeout(function() {
+            window.history.pushState(null, "", window.location.href);
+        }, 0);
+    };
+
+    // Permitir navegación normal cuando se cierra sesión o se realiza otra acción
+    document.querySelector('form[method="post"]').addEventListener('submit', function() {
+        window.onpopstate = null;  // Permitir regresar después de cerrar sesión
+        window.onbeforeunload = null;  // Eliminar advertencia al cerrar la ventana
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+    const montoInput = document.getElementById('montoVenta');
+
+    montoInput.addEventListener('input', function(e) {
+        // Remover cualquier caracter que no sea dígito
+        this.value = this.value.replace(/\D/g, '');
+        
+        // Limitar a 5 dígitos
+        if (this.value.length > 5) {
+            this.value = this.value.slice(0, 5);
+        }
+    });
+
+
+});
+    
+</script>
+
+
+{% endblock %}

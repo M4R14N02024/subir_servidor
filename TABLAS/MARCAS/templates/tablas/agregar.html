@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block titulo %}Agregar Elementos{% endblock %}
+
+{% block contenido %}
+<!-- Contenedor centralizado -->
+<div class="main-container">
+    <!-- Encabezado con estilo -->
+    <h2 class="heading-main mt-4 mb-4">Agregar</h2>
+
+    <!-- Menú para seleccionar qué formulario mostrar -->
+    <form method="get" action="{% url 'agregar' %}" class="form-select-container">
+        <div class="form-group-custom">
+            <label for="form_type" class="ag-label-blanco"><h4>Seleccione lo que quiere agregar:</h4></label>
+            <select id="form_type" name="form_type" class="form-select" onchange="this.form.submit()">
+                <option value="">-- Seleccionar --</option>
+                <option value="marca" {% if request.GET.form_type == 'marca' %}selected{% endif %}>Agregar Marca</option>
+                <option value="categoria" {% if request.GET.form_type == 'categoria' %}selected{% endif %}>Agregar Categoría</option>
+                <option value="tamaño" {% if request.GET.form_type == 'tamaño' %}selected{% endif %}>Agregar Tamaño</option>
+                <option value="edad" {% if request.GET.form_type == 'edad' %}selected{% endif %}>Agregar Edad</option>
+                <option value="animal" {% if request.GET.form_type == 'animal' %}selected{% endif %}>Agregar Animal</option>
+                <option value="consistencia" {% if request.GET.form_type == 'consistencia' %}selected{% endif %}>Agregar Consistencia</option>
+            </select>
+        </div>
+    </form>
+
+    <!-- Muestra el formulario seleccionado -->
+    {% if form_to_display %}
+    <div class="form-card-container">
+        <div class="form-card-body">
+            <h5 class="form-card-title titulo-blanco">
+                {% if request.GET.form_type == 'marca' %}Agregar Marca{% endif %}
+                {% if request.GET.form_type == 'categoria' %}Agregar Categoría{% endif %}
+                {% if request.GET.form_type == 'tamaño' %}Agregar Tamaño{% endif %}
+                {% if request.GET.form_type == 'edad' %}Agregar Edad{% endif %}
+                {% if request.GET.form_type == 'animal' %}Agregar Animal{% endif %}
+                {% if request.GET.form_type == 'consistencia' %}Agregar Consistencia{% endif %}
+            </h5>
+            <form id="addElementForm" method="post" action="{% url 'agregar' %}?form_type={{ request.GET.form_type }}" class="ag-formulario estilizado-formulario">
+              {% csrf_token %}
+              {{ form_to_display.as_p }}
+
+              {% if form_to_display.errors %}
+                <div class="alert alert-danger">
+                    <ul>
+                        {% for field, errors in form_to_display.errors.items %}
+                            <li>{{ field|capfirst }}: {{ errors|join:", " }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+              {% endif %}
+              
+              <button type="submit" class="ag-boton-agregar estilizado-boton">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+                      <path fill="none" d="M0 0h24v24H0z"></path>
+                      <path fill="currentColor" d="M11 11V5h2v6h6v2h-6v6h-2v-6H5v-2z"></path>
+                  </svg>
+                  <span>Agregar</span>
+              </button>
+          </form>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Botón "Regresar" -->
+    <a class="btn-return" href="{% url 'productos_baja_existencia' %}" role="button">
+      <svg class="svg-icon" fill="none" height="20" viewBox="0 0 20 20" width="20" xmlns="http://www.w3.org/2000/svg">
+        <g stroke="#ff342b" stroke-linecap="round" stroke-width="1.5">
+          <path d="m3.33337 10.8333c0 3.6819 2.98477 6.6667 6.66663 6.6667 3.682 0 6.6667-2.9848 6.6667-6.6667 0-3.68188-2.9847-6.66664-6.6667-6.66664-1.29938 0-2.51191.37174-3.5371 1.01468"></path>
+          <path d="m7.69867 1.58163-1.44987 3.28435c-.18587.42104.00478.91303.42582 1.0989l3.28438 1.44986"></path>
+        </g>
+      </svg>
+      <span class="label">Regresar</span>
+    </a>
+</div>
+
+<!-- Modal para mostrar éxito -->
+<div id="elementSuccessModal" class="modalA">
+  <div class="modal-contentA">
+      <h2>Agregado correctamente</h2>
+      <p id="elementSuccessMessage"></p>
+      <button id="redirectElementBtn">Ver lista</button>
+      <button id="closeElementModalBtn">Cerrar</button>
+  </div>
+</div>
+
+<!-- Modal para mostrar errores -->
+<div id="errorModal" class="modalAg" style="display:none;">
+  <div class="modal-contentAg">
+      <h2>Errores en el formulario</h2>
+      <div id="modal-body"></div>
+      <button id="closeErrorModalBtn">Cerrar</button>
+  </div>
+</div>
+
+{% endblock %}

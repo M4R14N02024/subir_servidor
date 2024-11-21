@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+
+{% block titulo %} AGREGAR NUEVO CLIENTE {% endblock %}
+
+{% block contenido %} 
+
+<div class="card-cliente">
+    <div class="card-headercliente">
+        CREAR CLIENTE
+    </div>
+    <div class="card-bocliente">
+        <h4 class="title-cliente">Tipo de cliente</h4>
+        {% include 'tablas/form.html' %}
+    </div>
+</div>
+
+
+{% endblock %}

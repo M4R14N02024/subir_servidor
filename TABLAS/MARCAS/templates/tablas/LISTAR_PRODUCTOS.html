@@ -1,0 +1,183 @@
+{% extends "base.html" %}
+
+{% block titulo %} LISTA DE PRODUCTOS {% endblock %}
+
+{% block contenido %}
+
+<div class="cardptss">
+  <div id="toastNotification" style="display: none; position: fixed; top: 20px; right: 20px; background-color: #4CAF50; color: white; padding: 15px 25px; border-radius: 4px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); z-index: 1000; opacity: 0; transition: opacity 0.3s ease-in-out;"></div>
+  <div class="back-button-LP">
+    <a href="/productos/bajo-stock/">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16">
+            <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" fill="currentColor"/>
+        </svg>
+        Atrás
+    </a>
+</div>
+  <h4 class="titulo-ptss">PRODUCTOS</h4>
+  <div class="card-headerptss">
+    <input type="text" id="searchprodl" placeholder="Buscar productos...">
+    <div id="searchResults" class="search-results"></div>
+    <a class="btn-agregarptss" href="{% url 'crear_producto' %}" role="button">AGREGAR PRODUCTO</a><br><br>
+    
+  </div>
+  
+
+  <div class="card-bodyptss">
+    
+    <div class="tabla-ptsr">
+      <table class="table-prtss">
+        <thead class="centered-headerpts">
+          <tr>
+            <th scope="col">ID</th>
+            <th scope="col">PRODUCTO</th>
+            <th scope="col">STOCK ACTUAL</th>
+            <th scope="col">PRECIO</th>
+            <th scope="col">IMAGEN</th>
+            <th scope="col">ACCIONES</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for producto in productos %}
+          <tr class="">
+              <td>{{ producto.id }}</td>
+              <td>
+                  {% if producto.categoria.nombre == "Indumentaria" or producto.categoria.nombre == "Accesorios" or producto.categoria.nombre == "Medicamentos" %}
+                      {{producto.categoria}} para {{ producto.animal}} {{ producto.edad}} {{ producto.marca}}
+                  {% else %}
+                  {{producto.categoria}} para {{ producto.animal}} {{producto.nombre}} {{ producto.edad}} {{ producto.marca}}
+                      {% if producto.peso %}
+                          x {{producto.peso}} Kg
+                      {% endif %}
+                  {% endif %}
+                  {% if producto.obs %}
+                      {{ producto.obs }}
+                  {% endif %}
+              </td>
+              <td>{{ producto.stock_a }}</td>
+              <td>{{ producto.precio }}</td>
+              <td>
+                {% if producto.imagen %}
+                    <img src="{{ producto.imagen.url }}" height="100px" alt="Imagen del producto">
+                {% else %}
+                    <img src="/static/imagenes/no-image.png" height="100px" alt="Sin imagen">
+                {% endif %}
+              </td>
+              <td>
+                <div class="accionesptss">
+                  {% if request.user.is_superuser or 'Empleados Especiales' in request.user.groups.all|stringformat:'s' or 'Administradores' in request.user.groups.all|stringformat:'s' %}
+                    <a class="btn-editarptss" href="{% url 'editar_producto' producto.id %}" role="button">
+                      Editar
+                      <svg class="icono-editarptss" viewBox="0 0 512 512">
+                        <path d="M410.3 231l11.3-11.3-33.9-33.9-62.1-62.1L291.7 89.8l-11.3 11.3-22.6 22.6L58.6 322.9c-10.4 10.4-18 23.3-22.2 37.4L1 480.7c-2.5 8.4-.2 17.5 6.1 23.7s15.3 8.5 23.7 6.1l120.3-35.4c14.1-4.2 27-11.8 37.4-22.2L387.7 253.7 410.3 231zM160 399.4l-9.1 22.7c-4 3.1-8.5 5.4-13.3 6.9L59.4 452l23-78.1c1.4-4.9 3.8-9.4 6.9-13.3l22.7-9.1v32c0 8.8 7.2 16 16 16h32zM362.7 18.7L348.3 33.2 325.7 55.8 314.3 67.1l33.9 33.9 62.1 62.1 33.9 33.9 11.3-11.3 22.6-22.6 14.5-14.5c25-25 25-65.5 0-90.5L453.3 18.7c-25-25-65.5-25-90.5 0zm-47.4 168l-144 144c-6.2 6.2-16.4 6.2-22.6 0s-6.2-16.4 0-22.6l144-144c6.2-6.2 16.4-6.2 22.6 0s6.2 16.4 0 22.6z"></path>
+                      </svg>
+                    </a>
+                    <a class="btn-eliminarptss" 
+                      href="{% url 'eliminar_producto' producto.id %}" 
+                      data-stock="{{ producto.stock_a }}"
+                      role="button">
+                        Borrar
+                        <svg class="icono-eliminarptss" viewBox="0 0 448 512">
+                            <path d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z"></path>
+                        </svg>
+                    </a>
+                    <a class="btn-descontarptss" onclick="abrirModalDescuento('{{ producto.id }}')">
+                      <span>Descontar</span>
+                      <svg class="icono-descontarptss" viewBox="0 0 24 24">
+                        <path d="M19 13H5v-2h14v2z"/>
+                      </svg>
+                    </a>
+                    {% endif %}
+                    <a class="btn-reponerptss" href="#" role="button" 
+                    data-id="{{ producto.id }}" 
+                    onclick="StockManager.abrirModalReposicion(this)">
+                    Reponer Stock
+                    <svg class="icono-reponerptss" viewBox="0 0 512 512">
+                        <path d="M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8zm0 464c-119 0-216-97-216-216S137 40 256 40s216 97 216 216-97 216-216 216zm76-144h-88v88c0 13.3-10.7 24-24 24s-24-10.7-24-24v-88H180c-13.3 0-24-10.7-24-24s10.7-24 24-24h88v-88c0-13.3 10.7-24 24-24s24 10.7 24 24v88h88c13.3 0 24 10.7 24 24s-10.7 24-24 24z"></path>
+                    </svg>
+                  </a>
+                </div>
+                
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <div class="pagination">
+        <span class="step-links">
+            {% if productos.has_previous %}
+                <a href="?page=1" class="pagination-link">&laquo; Primera</a>
+                <a href="?page={{ productos.previous_page_number }}" class="pagination-link">Anterior</a>
+            {% endif %}
+    
+            <span class="current">
+                Página {{ productos.number }} de {{ productos.paginator.num_pages }}
+            </span>
+    
+            {% if productos.has_next %}
+                <a href="?page={{ productos.next_page_number }}" class="pagination-link">Siguiente</a>
+                <a href="?page={{ productos.paginator.num_pages }}" class="pagination-link">Última &raquo;</a>
+            {% endif %}
+        </span>
+    </div>
+    </div>
+  </div>
+</div>
+
+<div id="modalReposicion" class="modalpr">
+  <div class="modal-contentpr">
+      <span class="closepr">&times;</span>
+      <h2 id="modalTitle">Reponer Stock</h2>
+      <div id="modalMensaje"></div>
+      <input type="number" id="cantidad" placeholder="Ingrese la cantidad" min="1">
+      <div class="modal-buttonspr">
+          <button onclick="StockManager.reponerStock()" class="btn-confirmarprs">Confirmar</button>
+          <button onclick="StockManager.cerrarModalReposicion()" class="btn-cancelarprst">Cancelar</button>
+      </div>
+  </div>
+</div>
+<div id="modalEliminar" class="modalpr">
+  <div class="modal-contentpr">
+      <div class="header-modal">
+          <span class="closepr" onclick="cerrarModalEliminar()">✕</span>
+          <h2>Confirmar Eliminación</h2>
+      </div>
+      <p id="mensajeEliminar"></p>
+      <div class="modal-buttonsprE">
+          <button class="btn-confirmarpr" id="btnConfirmar">Confirmar</button>
+          <button class="btn-cancelarpr" onclick="cerrarModalEliminar()">Cancelar</button>
+      </div>
+  </div>
+</div>
+<!-- MODAL DE DECONTAR -->
+<div id="modalDescuentoStock" class="modalpds">
+  <div class="modal-contentpds">
+      <div class="header-modal-pds">
+          <span class="closepds" onclick="cerrarModalDescuento()">✕</span>
+          <h2>Descontar Stock</h2>
+      </div>
+      <div class="form-groupds">
+          <label for="cantidad">Cantidad a descontar:</label>
+          <input type="number" id="cantidadDescuento" min="1" class="form-control">
+      </div>
+      <div class="form-groupdsts">
+          <label for="motivo">Motivo:</label>
+          <select id="motivoDescuento" class="form-control-ds">
+              <option value="VEN">Vencimiento</option>
+              <option value="DAÑ">Producto Dañado</option>
+              <option value="DEF">Defectuoso</option>
+              <option value="PER">Pérdida</option>
+              <option value="OTR">Otro</option>
+          </select>
+      </div>
+      <div class="form-group-dtsa">
+          <label for="observacion">Observación:</label>
+          <textarea id="observacionDescuento" class="form-control-desx"></textarea>
+      </div>
+      <div class="modal-buttonspdsrb">
+          <button class="btn-confirmards" onclick="confirmarDescuento()">Confirmar</button>
+          <button class="btn-cancelards" onclick="cerrarModalDescuento()">Cancelar</button>
+      </div>
+  </div>
+</div>
+
+{% endblock %}

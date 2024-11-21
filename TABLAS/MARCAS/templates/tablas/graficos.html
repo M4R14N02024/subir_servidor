@@ -1,0 +1,420 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block contenido %}
+<div class="container-fluid">
+    <div class="back-button-RGCOS">
+        <a href="javascript:history.back()">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16">
+                <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" fill="currentColor"/>
+            </svg>
+            Atrás
+        </a>
+    </div>
+    <h2 class="text-center" style="color: #ff8800; font-size: 3rem;">Graficos de La Herradura</h2>
+
+    <!-- KPIs -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="dashboard-card">
+                <h5>Total Ventas del Mes</h5>
+                <h3>ARS {{ total_ventas|floatformat:2|intcomma }}</h3>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="dashboard-card">
+                <h5>Promedio Diario</h5>
+                <h3>ARS {{ promedio_diario|floatformat:2|intcomma }}</h3>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts section remains the same structure -->
+    <div class="row">
+        <div class="col-md-12 mb-4">
+            <div class="dashboard-card">
+                <h3>Ventas Diarias (Última Semana)</h3>
+                <canvas id="ventasDiariasChart"></canvas>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="dashboard-card">
+                <h3>Resumen Semanal</h3>
+                <canvas id="ventasSemanalesChart"></canvas>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="dashboard-card">
+                <h3>Tendencia Mensual</h3>
+                <canvas id="ventasMensualesChart"></canvas>
+            </div>
+        </div>
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <div class="dashboard-card">
+                    <h3>Marcas más Vendidas</h3>
+                    <div style="height: 300px;">
+                        <canvas id="marcasVendidasChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <div class="dashboard-card">
+                    <h3>Top 5 Alimentos Sueltos</h3>
+                    <div style="height: 300px;">
+                        <canvas id="sueltosVendidosChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const formatoPeso = new Intl.NumberFormat('es-AR', {
+        style: 'currency',
+        currency: 'ARS',
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+    });
+    const barConfig = {
+        barPercentage: 0.4,    // Hace las barras más delgadas
+        categoryPercentage: 0.5
+    };
+    const orangeShades = [
+        'rgba(255, 136, 0, 0.7)',   // Naranja original
+        'rgba(255, 166, 0, 0.7)',   // Naranja más claro
+        'rgba(255, 98, 0, 0.7)',    // Naranja más oscuro
+        'rgba(255, 183, 77, 0.7)',  // Naranja amarillento
+        'rgba(255, 115, 0, 0.7)'    // Naranja medio
+    ];
+
+    const commonOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                labels: {
+                    color: '#ffffff'
+                }
+            },
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        return formatoPeso.format(context.raw);
+                    }
+                }
+            }
+        },
+        scales: {
+            x: {
+                grid: {
+                    color: 'rgba(255, 136, 0, 0.1)'
+                },
+                ticks: {
+                    color: '#ffffff'
+                }
+            },
+            y: {
+                beginAtZero: true,
+                grid: {
+                    color: 'rgba(255, 136, 0, 0.1)'
+                },
+                ticks: {
+                    color: '#ffffff',
+                    callback: function(value) {
+                        return formatoPeso.format(value);
+                    }
+                }
+            }
+        }
+    };
+
+    // Ventas Diarias
+    const ctxDiarias = document.getElementById('ventasDiariasChart');
+    if (ctxDiarias) {
+        const ventasDiariasData = {{ ventas_diarias_json|safe }};
+        new Chart(ctxDiarias, {
+            type: 'line',
+            data: {
+                labels: ventasDiariasData.labels,
+                datasets: [{
+                    label: 'Ventas',
+                    data: ventasDiariasData.data,
+                    borderColor: '#ff8800',
+                    backgroundColor: 'rgba(255, 136, 0, 0.1)',
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: commonOptions
+        });
+    }
+
+    // Ventas Semanales con espacio ajustado entre barras
+    const ctxSemanal = document.getElementById('ventasSemanalesChart');
+    if (ctxSemanal) {
+        const ventasSemanalesData = {{ ventas_semanales_json|safe }};
+        new Chart(ctxSemanal, {
+            type: 'bar',
+            data: {
+                labels: ventasSemanalesData.labels,
+                datasets: [{
+                    label: 'Ventas por Semana',
+                    data: ventasSemanalesData.data,
+                    backgroundColor: [
+                        'rgba(255, 136, 0, 0.7)',
+                        'rgba(255, 166, 0, 0.7)'
+                    ],
+                    borderColor: '#ff8800',
+                    borderWidth: 1,
+                    barPercentage: 0.4,
+                    categoryPercentage: 0.8  // Aumentado para reducir el espacio entre barras
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        labels: { color: '#ffffff' }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return 'ARS ' + context.raw.toLocaleString();
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: {
+                            color: 'rgba(255, 136, 0, 0.1)'
+                        },
+                        ticks: { color: '#ffffff' }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(255, 136, 0, 0.1)'
+                        },
+                        ticks: {
+                            color: '#ffffff',
+                            callback: function(value) {
+                                return 'ARS ' + value.toLocaleString();
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+
+     // Marcas más vendidas con barras más delgadas y diferentes tonos de naranja
+     const ctxMarcas = document.getElementById('marcasVendidasChart');
+    if (ctxMarcas) {
+        const ventasMarcasData = {{ ventas_marcas_json|safe }};
+        new Chart(ctxMarcas, {
+            type: 'bar',
+            data: {
+                labels: ventasMarcasData.labels,
+                datasets: [{
+                    label: 'Total Ventas (ARS)',
+                    data: ventasMarcasData.data,
+                    backgroundColor: [
+                        'rgba(255, 136, 0, 0.7)',   // Naranja original
+                        'rgba(255, 166, 0, 0.7)',   // Naranja más claro
+                        'rgba(255, 98, 0, 0.7)',    // Naranja más oscuro
+                        'rgba(255, 183, 77, 0.7)'   // Naranja amarillento
+                    ],
+                    borderColor: '#ff8800',
+                    borderWidth: 1,
+                    yAxisID: 'y',
+                    barPercentage: 0.6,            // Hace las barras más delgadas
+                    categoryPercentage: 0.7
+                }, {
+                    label: 'Cantidad Vendida',
+                    data: ventasMarcasData.cantidades,
+                    backgroundColor: [
+                        'rgba(255, 77, 0, 0.7)',    // Naranja rojizo
+                        'rgba(255, 115, 0, 0.7)',   // Naranja medio
+                        'rgba(255, 153, 0, 0.7)',   // Naranja dorado
+                        'rgba(255, 128, 0, 0.7)'    // Naranja estándar
+                    ],
+                    borderColor: '#ff4d00',
+                    borderWidth: 1,
+                    yAxisID: 'y1',
+                    barPercentage: 0.6,            // Hace las barras más delgadas
+                    categoryPercentage: 0.7
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        labels: { color: '#ffffff' }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                if (context.datasetIndex === 0) {
+                                    return 'Total Ventas: ARS ' + context.raw.toLocaleString();
+                                } else {
+                                    return 'Cantidad: ' + context.raw + ' unidades';
+                                }
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: {
+                            color: 'rgba(255, 136, 0, 0.1)'
+                        },
+                        ticks: { color: '#ffffff' }
+                    },
+                    y: {
+                        type: 'linear',
+                        position: 'left',
+                        grid: {
+                            color: 'rgba(255, 136, 0, 0.1)'
+                        },
+                        ticks: {
+                            color: '#ffffff',
+                            callback: function(value) {
+                                return 'ARS ' + value.toLocaleString();
+                            }
+                        }
+                    },
+                    y1: {
+                        type: 'linear',
+                        position: 'right',
+                        grid: {
+                            drawOnChartArea: false
+                        },
+                        ticks: {
+                            color: '#ffffff'
+                        }
+                    }
+                }
+            }
+        });
+    }
+    // Alimentos Sueltos
+    const ctxSueltos = document.getElementById('sueltosVendidosChart');
+    if (ctxSueltos) {
+        const ventasSueltosData = {{ ventas_sueltos_json|safe }};
+        new Chart(ctxSueltos, {
+            type: 'bar',
+            data: {
+                labels: ventasSueltosData.labels,
+                datasets: [{
+                    label: 'Total Ventas',
+                    data: ventasSueltosData.data,
+                    backgroundColor: [
+                        'rgba(255, 136, 0, 0.7)',
+                        'rgba(255, 166, 0, 0.7)'
+                    ],
+                    borderColor: '#ff8800',
+                    borderWidth: 1,
+                    barPercentage: 0.4,        // Mismo grosor que Marcas más Vendidas
+                    categoryPercentage: 0.95    // Aumentado para reducir el espacio entre barras
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        labels: { color: '#ffffff' }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return 'ARS ' + context.raw.toLocaleString();
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: {
+                            color: 'rgba(255, 136, 0, 0.1)'
+                        },
+                        ticks: { 
+                            color: '#ffffff',
+                            maxRotation: 45,
+                            minRotation: 45
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(255, 136, 0, 0.1)'
+                        },
+                        ticks: {
+                            color: '#ffffff',
+                            callback: function(value) {
+                                return 'ARS ' + value.toLocaleString();
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+
+
+    // Ventas Mensuales
+    const ctxMensual = document.getElementById('ventasMensualesChart');
+    if (ctxMensual) {
+        const ventasMensualesData = {{ ventas_mensuales_json|safe }};
+        new Chart(ctxMensual, {
+            type: 'line',
+            data: {
+                labels: ventasMensualesData.labels,
+                datasets: [{
+                    label: 'Ventas por Mes',
+                    data: ventasMensualesData.data,
+                    borderColor: '#ff8800',
+                    backgroundColor: 'rgba(255, 136, 0, 0.1)',
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: commonOptions
+        });
+    }
+});
+</script>
+
+<style>
+    .dashboard-card {
+        background-color: rgba(0,0,0,0.5);
+        border: 1px solid #ff8800;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 0 10px rgba(255,136,0,0.2);
+    }
+    
+    .dashboard-card h3,
+    .dashboard-card h5 {
+        color: #ff8800;
+        margin-bottom: 15px;
+    }
+    
+    .dashboard-card canvas {
+        min-height: 300px;
+        max-height: 300px;
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+
+{% block titulo %} EDITAR UN EMPLEADO {% endblock %}
+
+{% block contenido %} 
+
+<div class="card-empleadosx">
+    <div class="card-headerempleadosx">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <h2 class="titulo-empldxcs">EDITAR EMPLEADO</h2>
+            
+            {{ formulario.as_p }}
+
+            <div class="botones-empedit">
+                <button type="submit" class="boton-Gemp">Guardar Cambios</button>
+                <button href="{% url 'empleados' %}" class="boton-cancelarempl">Cancelar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

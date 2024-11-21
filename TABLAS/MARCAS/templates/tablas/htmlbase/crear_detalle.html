@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+
+{% block titulo %} AGREGAR UNA NUEVO DETALLE DE VENTA {% endblock %}
+
+{% block contenido %} 
+
+<div class="card">
+    <div class="card-header">
+        Crear un detalle
+    </div>
+    <div class="card-body">
+        <h4 class="card-title">Datos del detalle</h4>
+        {% include 'tablas/form.html' %}
+    </div>
+</div>
+
+
+{% endblock %}

@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+
+{% block titulo %} AGREGAR UNA NUEVO TAMAÑO {% endblock %}
+
+{% block contenido %} 
+
+<div class="card-tms">
+    <div class="card-headertms">
+        CREAR TAMAÑO
+    </div>
+    <div class="card-botms">
+        <h4 class="card-titletms">Datos de Tamaño</h4>
+        {% include 'tablas/form.html' %}
+    </div>
+</div>
+
+
+{% endblock %}

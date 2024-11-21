@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+
+{% block titulo %} EDITAR UN PRODUCTO {% endblock %}
+
+{% block contenido %}
+
+<div class="card-ed">
+  <div class="card-headered">
+    EDITAR PRODUCTO
+  </div>
+  <div class="card-bodyed">
+    <h4 class="card-titlee">Datos del producto</h4>
+    {% include 'tablas/form productos.html' %}
+  </div>
+  
+</div>
+<script>
+  document.querySelector('form').addEventListener('submit', function(e) {
+    var precioInput = document.getElementById('id_precio');
+    var precio = precioInput.value.replace(',', '.');
+    if (isNaN(parseFloat(precio)) || parseFloat(precio) <= 0) {
+      e.preventDefault();
+      alert('Por favor, ingrese un precio válido mayor que cero.');
+    }
+  });
+  </script>
+{% endblock %}

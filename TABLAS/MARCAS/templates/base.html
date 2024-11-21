@@ -1,0 +1,105 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+    <head>
+        <title>{% block titulo %}{% endblock %}</title>
+        <!-- Required meta tags -->
+        <meta charset="utf-8" />
+        <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1, shrink-to-fit=no"
+        />
+
+        <!-- Bootstrap CSS v5.2.1 -->
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+            integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+            crossorigin="anonymous"
+        />
+        <link rel="stylesheet" href="{% static 'css/style.css' %}">
+        <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    </head>
+
+    <body>
+    
+        {% if user.is_authenticated %}
+            <nav class="header-bar">
+                <div class="header-container">
+                    <div class="left-section">
+                        <a href="{% url 'menu_p' %}">
+                            <img src="{% static 'imagenes/Designer.png' %}" alt="Logo" class="logo">
+                        </a>
+                        <div class="info-container">
+                            <div class="user-info">
+                                <i data-lucide="user" class="user-icon"></i>
+                                {% if empleado %}
+                                    <h2>Hola, {{ empleado.nombre }}</h2>
+                                {% else %}
+                                    <h2>Hola, {{ user.username }}</h2>
+                                {% endif %}
+                            </div>
+                            {% if sucursal %}
+                                <div class="location-info">
+                                    <i data-lucide="map-pin" class="location-icon"></i>
+                                    <p>{{ sucursal.direccion }}</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+            
+                    <div class="right-section">
+                        {% if user.is_authenticated and request.path != '/login/' %}
+                            <div class="alert-badge">
+                                <a href="/productos/bajo-stock/" class="alert-icon">
+                                    <i data-lucide="bell" id="bell-icon"></i>
+                                    <span class="alert-count">{{ productos_bajo_stock|add:productos_sin_stock }}</span>
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </nav>
+            
+        {% endif %}
+    <div class="container">
+        <div class="row">
+            <div class="col-12 ">
+                {% block contenido %}{% endblock %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JavaScript Libraries -->
+    <script
+        src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+        integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+        crossorigin="anonymous"
+    ></script>
+
+    <script
+        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
+        integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
+        crossorigin="anonymous"
+    ></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    {% if request.path == '/login/' %}
+    <script src="{% static 'JAVA/login.js' %}"></script>
+    {% endif %}
+    {% if user.is_authenticated and request.path != '/login/' %}
+        <script src="{% static 'JAVA/main.js' %}"></script>
+        <script src="{% static 'JAVA/alerta.js' %}"></script>
+        <script src="{% static 'JAVA/recibo.js' %}"></script>
+        <script src="{% static 'JAVA/descontarpr.js' %}"></script>
+    {% endif %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            lucide.createIcons();
+        });
+    </script>
+    </body>
+</html>

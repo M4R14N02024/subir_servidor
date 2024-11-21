@@ -1,0 +1,26 @@
+<form enctype="multipart/form-data" method="post" class="styled-form">
+    {% csrf_token %}
+    {% for campo in formulario %}
+
+        <div class="form-group">
+            <label for="" class="form-label">{{ campo.label }}</label>
+            
+            <input
+                type="{{ campo.field.widget.input_type }}"
+                class="form-control"
+                name="{{ campo.name }}"
+                id=""
+                aria-describedby="helpId"
+                placeholder="{{ campo.label }}"
+                value="{{ campo.value | default:'' }}"
+            />
+        </div>
+        <div class="col-12 help-text"> {{campo.errors}} </div>
+    {% endfor %}
+
+    <input name="" id="" class="btn-successfF" type="submit" value="Guardar"/>
+    
+    
+
+
+</form>

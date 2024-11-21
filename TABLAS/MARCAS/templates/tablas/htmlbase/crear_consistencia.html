@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+
+{% block titulo %} AGREGAR NUEVA CONSISTENCIA {% endblock %}
+
+{% block contenido %} 
+
+<div class="card-constencias">
+    <div class="card-header-conss">
+        CREAR CONSISTENCIA
+    </div>
+    <div class="card-bocons">
+        <h4 class="card-titleconsten">Tipo de Consistencia</h4>
+        {% include 'tablas/form.html' %}
+    </div>
+</div>
+
+
+{% endblock %}

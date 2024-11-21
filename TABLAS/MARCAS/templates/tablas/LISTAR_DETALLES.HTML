@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block titulo %}LISTA DE detalles{% endblock %}
+
+{% block contenido %}
+<div class="card-detall">
+    <div class="back-button-Vt">
+        <a href="javascript:history.back()">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16">
+                <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" fill="currentColor"/>
+            </svg>
+            Atrás
+        </a>
+    </div>
+    <div class="card-bodydetall">
+        <h4 class="title-detall">Detalles de Venta #{{ venta.id }}</h4>
+        
+        <!-- Información de la venta -->
+        <div class="venta-detall">
+            <p><strong>Cliente:</strong> {{ venta.cliente }}</p>
+            <p><strong>Fecha:</strong> {{ venta.fecha_venta }}</p>
+            <p><strong>Hora:</strong> {{ venta.hora_venta }}</p>
+            <p><strong>Descuento aplicado:</strong> {{ venta.descuento }}%</p>
+            <p><strong>Método de Pago:</strong> {{ venta.get_metodo_pago_display }}</p>
+            <p>
+                <strong>Estado actual:</strong> 
+                <span class="detall-s">{{ venta.get_estado_display }}</span>
+                {% if venta.estado != 'pagada' and venta.estado != 'cancelada' %}
+                <form method="post" class="d-detall" id="formEstado">
+                    {% csrf_token %}
+                    <select name="estado" 
+                            onchange="confirmarCambioEstado(this)" 
+                            class="form-selectdetall">
+                        {% for value, label in estados %}
+                            <option value="{{ value }}" 
+                                    {% if value == venta.estado %}selected{% endif %}
+                                    {% if value == 'pagada' and venta.estado == 'cancelada' %}disabled{% endif %}
+                                    {% if value == 'cancelada' and venta.estado == 'pagada' %}disabled{% endif %}>
+                                {{ label }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </form>
+                {% endif %}
+            </p>
+        </div>
+
+        <div class="table-detall">
+            <table class="table-detalls">
+                <thead class="centered-header-detall">
+                    <tr>
+                        <th scope="col">ID</th>
+                        <th scope="col">PRODUCTO</th>
+                        <th scope="col">CANTIDAD</th>
+                        <th scope="col">PRECIO UNITARIO</th>
+                        <th scope="col">SUBTOTAL</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for detalle in detalles %}
+                    <tr>
+                        <td>{{ detalle.id }}</td>
+                        <td>{{ detalle.producto }}</td>
+                        <td>{{ detalle.cantidad }}</td>
+                        <td>${{ detalle.precio_unitario }}</td>
+                        <td>${{ detalle.subtotal }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot >
+                    <tr>
+                        <td colspan="4" class="text-end"><strong>Subtotal:</strong></td>
+                        <td>${{ subtotal }}</td>
+                    </tr>
+                    <tr>
+                        <td colspan="4" class="text-end"><strong>Descuento ({{ venta.descuento }}%):</strong></td>
+                        <td>-${{ monto_descuento }}</td>
+                    </tr>
+                    <tr>
+                        <td colspan="4" class="text-end"><strong>Total Final:</strong></td>
+                        <td>${{ total_final }}</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+</div>
+
+    
+
+
+{% endblock %}

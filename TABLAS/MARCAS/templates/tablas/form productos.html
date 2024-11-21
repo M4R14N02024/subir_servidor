@@ -1,0 +1,24 @@
+<form enctype="multipart/form-data" method="post" class="styled-formFp">
+  {% csrf_token %}
+  {% for campo in formulario %}
+<div class="form-groupe">
+  <label for="{{ campo.id_for_label }}" class="form-labele">{{ campo.label }}</label>
+  {% if campo.name == 'precio' %}
+    <input type="text" class="form-controlfPe" name="{{ campo.name }}" id="{{ campo.id_for_label }}"
+      aria-describedby="helpId" placeholder="Ej: 55000,00" 
+      value="{{ campo.value|default_if_none:'' }}"
+      pattern="\d+([.,]\d{1,2})?"
+      title="Ingrese un número válido con hasta 2 decimales"
+      required />
+  {% else %}
+    {{ campo }}
+  {% endif %}
+  <div class="col-12 help-text">{{ campo.errors }}</div>
+</div>
+{% endfor %}
+<div class="boton">
+  <input name="" id="" class="btn-successFp" type="submit" value="Guardar" />
+
+</div>
+  
+</form>

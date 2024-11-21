@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block titulo %}MENU{% endblock %}
+
+{% block contenido %}
+<div class="container-P">
+    <div class="row mt-5 d-flex align-items-center justify-content-center">
+        <div class="col-md-4 text-center">
+            <button id="openModalBtn" class="btn-AC">Apertura de Caja</button>
+        </div>
+        <div class="col-md-4 text-center">
+            <a href="{% url 'productos_baja_existencia' %}" class="btn-SCK">Stock</a>
+        </div>
+        {% if request.user.is_superuser or 'Empleados Especiales' in request.user.groups.all|stringformat:'s' or 'Administradores' in request.user.groups.all|stringformat:'s' %}
+            <div class="col-md-4 text-center ">
+                <a href="{% url 'registros' %}" class="btn-RG">Registros</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+<form method="post" action="{% url 'logout' %}" class="logout-form">
+    {% csrf_token %}
+    <button type="submit" class="btn-logout">
+        <!-- <i data-lucide="log-out" class="logout-icon"></i> -->
+        
+        <svg class="icono-salir" viewBox="0 0 512 512"><path d="M377.9 105.9L500.7 228.7c7.2 7.2 11.3 17.1 11.3 27.3s-4.1 20.1-11.3 27.3L377.9 406.1c-6.4 6.4-15 9.9-24 9.9c-18.7 0-33.9-15.2-33.9-33.9l0-62.1-128 0c-17.7 0-32-14.3-32-32l0-64c0-17.7 14.3-32 32-32l128 0 0-62.1c0-18.7 15.2-33.9 33.9-33.9c9 0 17.6 3.6 24 9.9zM160 96L96 96c-17.7 0-32 14.3-32 32l0 256c0 17.7 14.3 32 32 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-64 0c-53 0-96-43-96-96L0 128C0 75 43 32 96 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32z"></path>
+        </svg>
+    </button>
+</form>
+
+<div id="modal" class="modal">
+    <div class="modal-content">
+        <span id="closeModalBtn" class="close">&times;</span>
+        <h2>Apertura de Caja</h2>
+        <form id="aperturaCajaForm" method="POST" action="{% url 'apertura_caja' %}">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="montoInicial">Monto Inicial:</label>
+                <input type="number" id="montoInicial" name="monto_inicial" step="0.01" required class="form-control">
+            </div>
+            <button type="submit" class="btn btn-primary">Aceptar</button>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

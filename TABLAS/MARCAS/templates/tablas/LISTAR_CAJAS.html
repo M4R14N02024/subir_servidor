@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block titulo %}LISTADO DE CAJAS{% endblock %}
+
+{% block contenido %}
+<div class="content-cardcx">
+    <div class="card-headerxc">
+        <div class="back-button-LCjx">
+            <a href="javascript:history.back()">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16">
+                    <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" fill="currentColor"/>
+                </svg>
+                Atrás
+            </a>
+        </div>
+        <div class="container-lisrcj">
+            <div class="row mt-5 d-flex align-items-center justify-content-center">
+                <div class="col-md-4 text-center">
+                    <a href="{% url 'cajas' %}" class="btn-secondarycx">Volver a Caja del Día</a>
+                </div>
+            </div>
+        </div>
+
+
+        
+        <h4 class="title-cajass">LISTADO DE CAJAS</h4>
+        
+    </div>
+
+    {% if error %}
+        <div class="alert alert-danger mt-3">
+            {{ error }}
+        </div>
+    {% endif %}
+
+    {% if cajas %}
+        <div class="table-responsivexc">
+            <table class="table-cx">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Fecha</th>
+                        <th>Sucursal</th>
+                        <th>Empleado</th>
+                        <th>Estado</th>
+                        <th>Monto Inicial</th>
+                        <th>Total Ingresos</th>
+                        <th>Total Egresos</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for caja in cajas %}
+                        <tr>
+                            <td>{{ caja.id }}</td>
+                            <td>{{ caja.fecha_hs_ap|date:"d/m/Y H:i" }}</td>
+                            <td>{{ caja.sucursal }}</td>
+                            <td>{{ caja.empleado }}</td>
+                            <td>
+                                {% if caja.abierta %}
+                                    <span class="bg-successds">Abierta</span>
+                                {% else %}
+                                    <span class="bg-secondaryds">Cerrada</span>
+                                {% endif %}
+                            </td>
+                            <td>${{ caja.monto_ini|floatformat:2 }}</td>
+                            <td>${{ caja.total_ing|floatformat:2 }}</td>
+                            <td>${{ caja.total_egr|floatformat:2 }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="alert alert-info mt-3">
+            No hay cajas registradas.
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

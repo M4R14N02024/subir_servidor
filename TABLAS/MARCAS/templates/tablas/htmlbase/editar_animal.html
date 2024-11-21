@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+
+{% block titulo %} EDITAR UN ANIMAL {% endblock %}
+
+{% block contenido %} 
+
+<div class="card">
+    <div class="card-header">
+        Editar una animal
+    </div>
+    <div class="card-body">
+        <h4 class="card-title">Datos animal</h4>
+        {% include 'tablas/form.html' %}
+    </div>
+</div>
+
+{% endblock %}
+
